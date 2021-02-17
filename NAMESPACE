@@ -1,0 +1,31 @@
+export(MANOVA,PerMANOVA.Simple, PostHocComp, DistBinary,
+              MANOVA.Estimation, PERMANOVA, DistContinuous, PERMANOVA.Estimation,
+              BootDisMANOVA,summary.BootDisMANOVA, ConcEllipse,
+              BootDistCanonicalAnalysis, plot.BootCanonAnalysis,
+              plot.MANOVA, plot.PERMANOVA, ConstructContrasts, plot.ellipse,
+              AddClusterToBiplot, BiplotVar, FactorToBinary, PlotClustersBiplot,
+              ProcrustesSimple, TextSmart, BinaryVectorCheck, GetScalesBiplot,
+              IniTransform, Ginv, Circle2, Ones, Zeros, Cumsum, inbox, mgc)
+
+S3method(summary, spermanova)
+S3method(summary, PERMANOVA)
+S3method(print, PERMANOVA)
+S3method(plot, PERMANOVA)
+S3method(plot, MANOVA)
+S3method(plot, ellipse)
+S3method(summary, MANOVA)
+S3method(summary, BootDisMANOVA)
+S3method(print, BootDisMANOVA)
+S3method(plot, BootDisMANOVA)
+S3method(plot, BootCanonAnalysis)
+
+import ("MASS", "Matrix", "xtable", "scales", "deldir")
+
+importFrom("grDevices", "chull", "col2rgb", "palette", "rainbow",
+               "rgb")
+importFrom("graphics", "arrows", "legend", "lines", "points", "rect",
+               "segments", "text")
+importFrom("stats", "as.dendrogram", "as.dist", "contr.helmert", "cor",
+               "cutree", "dendrapply", "df", "dist", "hclust", "is.leaf",
+               "kmeans", "median", "pf", "predict", "qchisq", "qf", "qt",
+               "quantile", "sd", "runif")
