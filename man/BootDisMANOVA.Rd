@@ -54,6 +54,7 @@ Should the initial data be included in the results.
 \details{
 Multivariate Analysis of Variance based on distances and Bootstrap.
 }
+
 \value{
 \item{call}{Function}
 \item{Title}{Title of the study}
@@ -69,14 +70,15 @@ Multivariate Analysis of Variance based on distances and Bootstrap.
 \item{DistMuestral}{Sample distribution of F-exp from permutations.}
 \item{pvalue}{Estimate p-valor for PERMANOVA.}
 \item{ExplainedVariance}{Explained variance by Principal Coordinates selected.}
-\item{Inertias}{Own value, Explained variance, Cumulative explained variance.}
+\item{Inertias}{Eigenvalue, Explained variance, Cumulative explained variance.}
 \item{MeanCoordinates}{Mean Coordinates by groups for the dimensions obtained in the Principal Coordinates Analysis.}
 \item{Qualities}{Qualities representation by groups for the dimensions of PCoA.}
-\item{CumulativeQualities}{Cumulative qualities representation.}
+\item{CummulativeQualities}{Cummulative qualities representation.}
 \item{ClusterType}{Cluster type selected.}
 \item{Clusters}{Clusters created.}
 \item{ClusterNames}{Names of clusters}
 \item{ClusterColors}{Colors of clusters, color name and HTML code.}
+
 }
 \references{
 Anderson, M. J. (2001). A new method for non-parametric multivariate analysis of variance. Austral ecology, 26(1):32–46.
@@ -88,7 +90,7 @@ Laura Vicente-Gonzalez, Jose Luis Vicente-Villardon
 }
 
 \examples{
-\dontrun{data(wine)
+\donttest{data(wine)
 X = wine[,4:21]
 D = DistContinuous (X)
 bootwine=BootDisMANOVA(D, wine$Group)

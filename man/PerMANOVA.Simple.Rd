@@ -62,7 +62,7 @@ Laura Vicente-Gonzalez, Jose Luis Vicente-Villardon
 }
 
 \examples{
-\dontrun{data(wine)
+\donttest{data(wine)
 X = wine[,4:21]
 Dist = DistContinuous (X)
 PerMANOVA.Simple(Dist$D, wine$Group)

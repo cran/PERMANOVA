@@ -9,11 +9,11 @@ Plots the principal coordinates of the group centers and the bootstrap confidenc
 }
 \usage{
 \method{plot}{BootCanonAnalysis}(x, A1 = 1, A2 = 2, centred = FALSE, confidence = 0.9,
-PlotReplicates = TRUE, MeanCex = 1.5, MeanPch = 16, Title =
-"Bootstrap Canonical Analysis based on Distances", LabelMeans = TRUE,
-MeanLabels = NULL, MeanColors = NULL, SmartLabels = TRUE, BootstrapPlot = "el",
-PlotIndiv = FALSE, LabelInd = FALSE, IndLabels = NULL, IndColors = NULL,
-CexInd = 0.5, PchInd = 1, ConvexHullsInd = FALSE, ...)
+PlotReplicates = TRUE, MeanCex = 1.5, MeanPch = 16, 
+Title = "Bootstrap Canonical Analysis based on Distances", 
+LabelMeans = TRUE, MeanLabels = NULL, MeanColors = NULL, SmartLabels = TRUE, 
+BootstrapPlot = "el", PlotIndiv = FALSE, LabelInd = FALSE, IndLabels = NULL, 
+IndColors = NULL, CexInd = 0.5, PchInd = 1, ConvexHullsInd = FALSE, ...)
 }
 
 \arguments{

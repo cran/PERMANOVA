@@ -22,7 +22,7 @@ The logical result.
 }
 
 \author{
-Jose luis Vicente-Villardon
+Jose Luis Vicente-Villardon
 }
 
 \examples{

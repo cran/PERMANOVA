@@ -63,11 +63,11 @@ Varas, M. J., Vicente-Tavera, S., Molina, E., & Vicente-Villardon, J. L. (2005).
 Santana, M. A., Romay, G., Matehus, J., Vcente-Villardon, J. L., & Demey, J. R. (2009). simple and low-cost strategy for micropropagation of cassava (Manihot esculenta Crantz). African Journal of Biotechnology, 8(16).
 }
 \author{
-Laura Vicente-Gonzalez, José Luis Vicente-Villardon
+Laura Vicente-Gonzalez, Jose Luis Vicente-Villardon
 }
 
 \examples{
-\dontrun{
+\donttest{
 data(wine)
 Y=as.matrix(wine[,4:21])
 group=wine$Group

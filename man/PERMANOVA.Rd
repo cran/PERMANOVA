@@ -12,7 +12,7 @@ Contrasts and Effects can be added to the calculations.
 \usage{
 PERMANOVA(Distance, group, C = NULL, Effects = NULL, nperm = 1000, seed = NULL,
 CoordPrinc = FALSE, dimens = 2, PCoA = "Standard", ProjectInd = TRUE, tol = 1e-04,
-DatosIni = TRUE)
+DatosIni = TRUE, PostHoc="bonferroni")
 }
 
 \arguments{
@@ -60,6 +60,25 @@ Tolerance.
   \item{DatosIni}{
 It contains the initial data. By default is TRUE.
 }
+  \item{PostHoc}{
+  Correction method. There are eight possibilities:
+  
+    *holm: Holm
+    
+    *hochberg: Hochberg 
+    
+    *hommel: Hommel
+    
+    *bonferroni: Bonferroni. By default is this method.
+    
+    *BH:Benjamini & Hochberg 
+    
+    *BY: Benjamini & Yekutieli
+    
+    *fdr: Benjamini & Hochberg 
+    
+    *none
+}
 }
 \details{
 The function performs a PERMANOVA Analysis.
@@ -80,7 +99,7 @@ The PERMANOVA function create a list that return:
 \item{DistMuestral}{Sample distribution of F-exp from permutations.}
 \item{pvalue}{Estimate p-valor for PERMANOVA.}
 \item{ExplainedVariance}{Explained variance by Principal Coordinates selected.}
-\item{Inertias}{Own value, Explained variance, Cumulative explained variance.}
+\item{Inertias}{Eigenvalue, Explained variance, Cumulative explained variance.}
 \item{MeanCoordinates}{Mean Coordinates by groups for the dimensions obtained in the Principal Coordinates Analysis.}
 \item{Qualities}{Qualities representation by groups for the dimensions of PCoA.}
 \item{CummulativeQualities}{Cumulative qualities representation.}
@@ -99,7 +118,7 @@ Laura Vicente-Gonzalez, Jose Luis Vicente-Villardon
 }
 
 \examples{
-\dontrun{data(wine)
+\donttest{data(wine)
 X = wine[,4:21]
 X=IniTransform(X)
 D = DistContinuous (X)

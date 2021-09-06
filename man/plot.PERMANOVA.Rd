@@ -17,7 +17,8 @@ CexVar = NULL, PchVar = NULL, ColorVar = NULL, WhatVars = NULL, VarLabels = NULL
 mode = "a", TypeScale = "Complete", ValuesScale = "Original", SmartLabels = TRUE,
 AddLegend = TRUE, LegendPos = "topright", PlotCircle = TRUE, ConvexHulls = FALSE,
 TypeCircle = "M", MinQualityVars = 0, dpg = 0, dpi = 0, PredPoints = 0,
-PlotContrasts = FALSE, IndLimits=FALSE, ...)
+PlotClus = TRUE, TypeClus = "ch", ClustConf = 1, CexClustCenters=1,ClustCenters = FALSE, 
+UseClusterColors = TRUE, ...)
 }
 
 \arguments{
@@ -150,11 +151,24 @@ A set of indices with the individuals that will show the projections.
   \item{PredPoints}{
 A vector with integers. The group centers listed in the vector are projected onto all the variables.
 }
-  \item{PlotContrasts}{
-Should the contrasts be plotted?
+  \item{PlotClus}{
+Should the clusters be plotted?
 }
-  \item{IndLimits}{
-Should the limits of the graph include all the individuals?
+  \item{TypeClus}{
+	
+Type of plot for the clusters. ("ch"- Convex Hull, "el"- Ellipse or "st"- Star)
+}
+  \item{ClustConf}{
+Percent of points included in the cluster. only the ClusConf percent of the points nearest to the center will be used to calculate the cluster.
+}
+  \item{CexClustCenters}{
+Size of the cluster centers.
+}
+  \item{ClustCenters}{
+Should the cluster centers be plotted.
+}
+  \item{UseClusterColors}{
+Should the cluster colors be used in the plot. 
 }
   \item{\dots}{
 Any other graphical parameter.

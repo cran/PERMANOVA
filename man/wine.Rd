@@ -11,9 +11,9 @@ Comparison of young wines of Ribera de Duero and Toro.
 \format{
   A data frame with 45 observations on the following 21 variables.
   \describe{
-    \item{\code{Year}}{a factor with levels \code{1986} \code{1987}}
-    \item{\code{Origin}}{a factor with levels \code{Ribera} \code{Toro}}
-    \item{\code{Group}}{a factor with levels \code{R86} \code{R87} \code{T86} \code{T87}}
+    \item{\code{Year}}{A factor with levels \code{1986} \code{1987}}
+    \item{\code{Origin}}{A factor with levels \code{Ribera} \code{Toro}}
+    \item{\code{Group}}{A factor with levels \code{R86} \code{R87} \code{T86} \code{T87}}
     \item{\code{A}}{Alcoholic content (percentage)}
     \item{\code{VA}}{volatil acidity - g acetic acid/l}
     \item{\code{TA}}{Total tritable acidity - g tartaric acid/l}

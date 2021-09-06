@@ -1,6 +1,6 @@
 \name{inbox}
 \alias{inbox}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
 Checks if a point is inside a box
 }

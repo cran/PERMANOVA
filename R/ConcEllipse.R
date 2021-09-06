@@ -1,8 +1,7 @@
 ConcEllipse <- function(data, center=NULL, confidence=1, npoints=100){
   if (dim(data)[2] != 2) stop("Data for ellipses must be two-dimensional")
   if (is.null(center))
-    center=apply(data,2,mean)
-  print(center)
+  center=apply(data,2,mean)
   n=dim(data)[1]
   datacen=(diag(n)-matrix(1, n, n)/n) %*% data
   DE=svd(datacen)

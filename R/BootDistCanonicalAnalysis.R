@@ -10,8 +10,8 @@ BootDistCanonicalAnalysis <- function(Distance, groups,  dimens=NULL, nB = 100, 
   result$nB=nB
   result$Groups=groups
   result$GroupNames = levels(groups)
-  L = length(levels(groups)) #Número de grupos
-  I = dim(D)[1] #Número de de individuos
+  L = length(levels(groups)) #Number of groups
+  I = dim(D)[1] #Number of individuos
   X = FactorToBinary(groups)
 
   colnames(X)=levels(groups)
@@ -23,21 +23,16 @@ BootDistCanonicalAnalysis <- function(Distance, groups,  dimens=NULL, nB = 100, 
 
   if (is.null(dimens)) dimens=(L-1)
 
-
-  FS=solve(N)%*% (t(X) %*% (0.5*D^2) %*% X) %*% solve(N)
-  f=matrix(diag(FS), L, 1)
-
-  DB=2*FS - f %*% matrix(1, 1, L) - t(f %*% matrix(1, 1, L))
-  DB=0.5*DB
+  F=diag(1/Ns) %*% (t(X) %*% (0.5*D^2) %*% X) %*% diag(1/Ns)
+  f=matrix(diag(F),L,1)
 
   switch(PCoA, Standard = {
     H=(diag(L) - matrix(1, L, L)/L)
-    B =  H %*% DB %*% H
   },Weighted = {
     H=(diag(L) - matrix(1, L, 1) %*% matrix(diag(N), 1, L)/I)
-    B = H %*% DB  %*% H
   })
 
+  B = -1 * H %*% F  %*% H
   solut <- svd(B)
   b=diag(B)
 
@@ -64,6 +59,7 @@ BootDistCanonicalAnalysis <- function(Distance, groups,  dimens=NULL, nB = 100, 
   colnames(result$Qualities)=paste("Dim",1:dim(result$Qualities)[2])
   result$CummulativeQualities=t(apply(result$Qualities,1,cumsum))
 
+  if (!is.null(seed)) set.seed(seed)
   coord=array(0, c(L,dimens,nB))
   print("Calculating Bootstrap")
   for (i in 1:nB){
@@ -75,20 +71,11 @@ BootDistCanonicalAnalysis <- function(Distance, groups,  dimens=NULL, nB = 100, 
     }
 
     D2=D[muestra, muestra]
-    FS=solve(N)%*% (t(X) %*% (0.5*D2^2) %*% X) %*% solve(N)
-    f=matrix(diag(FS), L, 1)
 
-    DB=2*FS - f %*% matrix(1, 1, L) - t(f %*% matrix(1, 1, L))
-    DB=0.5*DB
+    F=diag(1/Ns) %*% (t(X) %*% (0.5*D2^2) %*% X) %*% diag(1/Ns)
+    #f=matrix(diag(F),L,1)
 
-    switch(PCoA, Standard = {
-      H=(diag(L) - matrix(1, L, L)/L)
-      B =  H %*% DB %*% H
-    },Weighted = {
-      H=(diag(L) - matrix(1, L, 1) %*% matrix(diag(N), 1, L)/I)
-      B = H %*% DB  %*% H
-    })
-
+    B = -1 * H %*% F  %*% H
     solut <- svd(B)
     vp2=solut$d[1:dimens]
     Inertia2=(solut$d[1:dimens]/sum(solut$d)) * 100
@@ -96,36 +83,40 @@ BootDistCanonicalAnalysis <- function(Distance, groups,  dimens=NULL, nB = 100, 
     Y2=Y2[,1:dimens]
     #Y2= Y2[,1:dimens]
     if (ProcrustesRot)
-      Y2=ProcrustesSimple(Y,Y2)$Yrot
+      Y2=ProcrustesSimple(Y,Y2, centre=TRUE)$Yrot
     coord[,,i]=Y2[,1:dimens]
   }
   result$CoordBoot=coord
 
-
-  # Coordenadas de los individuos
-  if (DatosIni){
-    YY=as.matrix(Distance$Data)
-    Means= solve(N) %*% t(X) %*% YY
-    Di=DistContinuous(Means, y=YY, coef = Distance$Coefficient)$D^2
-    Yi=-0.5 * ginv(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
-    Yi=t(Yi)}
-  else{
-    G <- (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I) %*% (-0.5 * D^2) %*% (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I)
-    soluc <- svd(G)
-    dimefec=sum(soluc$d > tol)
-    YY=soluc$u[,1:dimefec] %*% diag(sqrt(soluc$d[1:dimefec]))
-    Means= solve(N) %*% t(X) %*% YY
-    Di=DistContinuous(Means, y=YY, coef = 1)$D
-    Yi=-0.5 * solve(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
-    Yi=t(Yi)
+  CoordinatesMeans=result$MeanCoordinates
+  for (i in 1:L){
+    CoordinatesMeans[i,]=apply(t(coord[i,,]), 2, mean)
   }
 
-  rownames(Yi)=rownames(D)
-  result$RowCoordinates=Yi
+  result$BootstrapCenters=CoordinatesMeans
+  # Coordenadas de los individuos
+    if (DatosIni){
+      YY=as.matrix(Distance$Data)
+      Means= diag(1/Ns) %*% t(X) %*% YY
+      Di=DistContinuous(Means, y=YY, coef = Distance$Coefficient)$D^2
+      Yi=-0.5 * ginv(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
+      Yi=t(Yi)}
+    else{
+      G <- (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I) %*% (-0.5 * D^2) %*% (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I)
+      soluc <- eigen(G)
+      dimefec=sum(soluc$values > 0)
+      YY=soluc$vectors[,1:dimefec] %*% diag(sqrt(soluc$values[1:dimefec]))
+      Means= diag(1/Ns) %*% t(X) %*% YY
+      Di=DistContinuous(Means, y=YY, coef = 1)$D
+      Yi=-0.5 * solve(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
+      Yi=t(Yi)
+    }
+
+    rownames(Yi)=rownames(D)
+    result$RowCoordinates=Yi
 
   class(result)="BootCanonAnalysis"
   return(result)
 }
-
 
 

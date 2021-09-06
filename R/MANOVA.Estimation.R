@@ -80,7 +80,7 @@ MANOVA.Estimation <- function(Y, X, C, M) {
 
   ManovaR=rbind(Wilsr, Pillair, Hottelingr, Royr)
   rownames(ManovaR) =c("Wilk's lambda", "Pillai Trace", "Lawley-Hotteling", "Roy's greatest root")
-  colnames(ManovaR)=c("Estadistico", "F aprox", "GL. Num", "GL. Den", "p-valor")
+  colnames(ManovaR)=c("Estadistico", "F aprox", "df Num", "df Den", "p-valor")
   Man$MANOVA=ManovaR
   return(Man)
 

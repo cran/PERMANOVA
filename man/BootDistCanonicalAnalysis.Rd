@@ -1,8 +1,7 @@
 \name{BootDistCanonicalAnalysis}
 \alias{BootDistCanonicalAnalysis}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-Canonical Analysis based on Distances
+
+\title{Canonical Analysis based on Distances
 }
 \description{
 Canonical Analysis based on distances. Confidence Regions for the mean vectors are calculated using bootstrap.
@@ -11,7 +10,7 @@ Canonical Analysis based on distances. Confidence Regions for the mean vectors a
 BootDistCanonicalAnalysis(Distance, groups, dimens = NULL, nB = 100, seed = NULL,
 PCoA = "Standard", ProcrustesRot = TRUE, DatosIni = TRUE, tol = 1e-04)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{Distance}{
 A list of three elements containing the data, the distances between individuals and type of distance used.

@@ -1,3 +1,4 @@
+
 DistContinuous <- function(x, y=NULL,  coef = "Pythagorean", r = 1) {
   # We sould change this function to avoid loops
   distances = c("Pythagorean", "Taxonomic", "City", "Minkowski", "Divergence", "dif_sum", "Camberra", "Bray_Curtis", "Soergel", "Ware_Hedges", "Gower")

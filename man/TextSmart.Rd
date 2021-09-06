@@ -33,7 +33,7 @@ Additional graphical arguments.
 The function is used to improve the readability of the labels in a scattergram.
 }
 \value{
-No value returned
+No value returned.
 }
 
 \author{

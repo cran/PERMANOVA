@@ -28,4 +28,4 @@ importFrom("graphics", "arrows", "legend", "lines", "points", "rect",
 importFrom("stats", "as.dendrogram", "as.dist", "contr.helmert", "cor",
                "cutree", "dendrapply", "df", "dist", "hclust", "is.leaf",
                "kmeans", "median", "pf", "predict", "qchisq", "qf", "qt",
-               "quantile", "sd", "runif")
+               "quantile", "sd", "runif", "p.adjust")

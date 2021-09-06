@@ -39,19 +39,26 @@ plot.BootCanonAnalysis <- function(x, A1=1, A2=2, centred=FALSE, confidence=0.90
 
   CoordinatesMeans=x$MeanCoordinates[,c(A1,A2)]
 
+  for (i in 1:L){
+    CoordinatesMeans[i,]=apply(t(x$CoordBoot[i,c(A1,A2),]), 2, mean)
+  }
+  points(CoordinatesMeans[,A1], CoordinatesMeans[,A2], col=MeanColors, pch=1, cex=1)
+
   if (LabelMeans)
     if (SmartLabels)
       TextSmart(cbind(x$MeanCoordinates[,A1], x$MeanCoordinates[,A2]), MeanLabels, CexPoints = MeanCex, ColorPoints = MeanColors)
   else text(x$MeanCoordinates[,A1], x$MeanCoordinates[,A2], labels = MeanLabels, col=MeanColors, cex=MeanCex, pos=1)
 
-  if (BootstrapPlot=="el")
+  if (BootstrapPlot=="el"){
     for (i in 1:L){
       if (centred)
         ellipse=ConcEllipse( t(x$CoordBoot[i,c(A1,A2),]), center= c(x$MeanCoordinates[i,A1], x$MeanCoordinates[i,A2]), confidence=confidence)
       else
         ellipse=ConcEllipse( t(x$CoordBoot[i,c(A1,A2),]), confidence=confidence)
       plot(ellipse , col=MeanColors[i])
-      CoordinatesMeans[i,]=apply(t(x$CoordBoot[i,c(A1,A2),]), 2, mean)}
+      CoordinatesMeans[i,]=apply(t(x$CoordBoot[i,c(A1,A2),]), 2, mean)
+      }
+  }
   else{
     for (i in 1:L){
       if (centred)
@@ -63,12 +70,17 @@ plot.BootCanonAnalysis <- function(x, A1=1, A2=2, centred=FALSE, confidence=0.90
   }
 
   points(CoordinatesMeans[,1], CoordinatesMeans[,2], col=MeanColors, pch=MeanPch, cex=MeanCex)
+  difs=CoordinatesMeans-x$MeanCoordinates
+
   for (i in 1:L)
-    segments(x$MeanCoordinates[i,A1], x$MeanCoordinates[i,A2],CoordinatesMeans[i,1], CoordinatesMeans[i,2],  col=MeanColors[i])
+    arrows(x$MeanCoordinates[i,A1], x$MeanCoordinates[i,A2],CoordinatesMeans[i,1], CoordinatesMeans[i,2],  col=MeanColors[i])
 
   if (PlotReplicates)
     for (i in 1:L){
-      rep=t(x$CoordBoot[i,c(A1,A2),])
+      if (centred)
+        rep=t(x$CoordBoot[i,c(A1,A2),])- matrix(1, nrow=x$nB, ncol=1)%*%difs[i,]
+      else
+        rep=t(x$CoordBoot[i,c(A1,A2),])
       points(rep[,A1], rep[,A2], col=MeanColors[i], cex=0.7, pch=16)
     }
 
@@ -79,7 +91,6 @@ plot.BootCanonAnalysis <- function(x, A1=1, A2=2, centred=FALSE, confidence=0.90
     if (SmartLabels)
       TextSmart(cbind(A[, A1], A[, A2]), CexPoints = CexInd, ColorPoints = IndColors, ...)
   else text(A[, A1], A[, A2], rownames(A), cex = CexInd, col = IndColors, pos = 1, ...)
-
 
   if (ConvexHullsInd) {
     lev = levels(x$Groups)
@@ -94,4 +105,7 @@ plot.BootCanonAnalysis <- function(x, A1=1, A2=2, centred=FALSE, confidence=0.90
 
 
 }
+
+
+
 

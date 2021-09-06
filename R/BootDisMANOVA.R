@@ -17,10 +17,8 @@ BootDisMANOVA <- function(Distance, groups, C=NULL, Effects=NULL, nB = 1000, see
   RowNames = rownames(D)
 
   Perm$Title = "MANOVA BASED ON  based DISTANCES"
-  Perm$Type = "BootDisMANOVA"
+  Perm$Type = "BootMANOVA"
   Perm$Distances = D
-  Perm$Groups=groups
-  Perm$Cini=C
 
   if (is.factor(groups)) {
     GroupNames = levels(groups)
@@ -64,7 +62,7 @@ BootDisMANOVA <- function(Distance, groups, C=NULL, Effects=NULL, nB = 1000, see
   }
 
   for (i in 1:nB){
-    #    if (i%%100==0) print(i)
+#    if (i%%100==0) print(i)
     muestra=sample.int(I, size=I, replace=TRUE)
     Man=PERMANOVA.Estimation(D[muestra, muestra], X, C, Effects)
     Ftotal[i]=Man$Global[5]
@@ -121,7 +119,7 @@ BootDisMANOVA <- function(Distance, groups, C=NULL, Effects=NULL, nB = 1000, see
     Perm$ExplainedVariance = Inertia
     Perm$Inertias= cbind(vp, Inertia, cumsum(Inertia))
     rownames(Perm$Inertias)=paste("PCo", 1:dimens)
-    colnames(Perm$Inertias)=c("Own value", "Explained Variance", "Cumulative")
+    colnames(Perm$Inertias)=c("Eigenvalue", "Explained Variance", "Cumulative")
     Y = solut$u %*% diag(sqrt(solut$d))
     d0=apply(Y^2,1, sum)
 

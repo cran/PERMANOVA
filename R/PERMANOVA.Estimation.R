@@ -32,7 +32,7 @@ PERMANOVA.Estimation <- function(D, X, C, Effects=NULL){
     FEexp= (solve(tam) %*% XX %*% SCEC) / (SCR/(I-L))
     rownames(FEexp)=levels(Effects)
     Result$Effects=cbind(SCE, rep(SCR, ne), diag(tam), rep(I-L, ne), FEexp)
-    colnames(Result$Effects)=c("Explicada", "Residual","G.L. Num", "G.L. Denom", "F-exp")
+    colnames(Result$Effects)=c("Explained", "Residual","df Num", "df Denom", "F-exp")
     rownames(Result$Effects)=levels(Effects)
   }
 

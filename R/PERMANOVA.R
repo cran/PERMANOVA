@@ -1,4 +1,4 @@
-PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=NULL, CoordPrinc=FALSE, dimens=2, PCoA="Standard", ProjectInd=TRUE, tol=1e-4, DatosIni=TRUE) {
+PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=NULL, CoordPrinc=FALSE, dimens=2, PCoA="Standard", ProjectInd=TRUE, tol=1e-4, DatosIni=TRUE, PostHoc="bonferroni") {
 
   D=Distance$D
   Coefficient=Distance$Coefficient
@@ -20,8 +20,6 @@ PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=
   Perm$Title = "MANOVA BASED ON  based DISTANCES"
   Perm$Type = "PERMANOVA"
   Perm$Distances = D
-  Perm$Groups=group
-  Perm$Cini=C
 
   if (is.factor(group)) {
     GroupNames = levels(group)
@@ -77,21 +75,23 @@ PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=
 
   Perm$DistMuestral=Ftotal
   Perm$pvalue=((sum(Ftotal >= Perm$Initial$Global[1,5]) +1 )/ (nperm+1))
-  Perm$Initial$Global= cbind(Perm$Initial$Global, Perm$pvalue)
+  Perm$Initial$Global= cbind(Perm$Initial$Global, Perm$pvalue, Perm$pvalue)
 
-  colnames(Perm$Initial$Global)=c("Explained", "Residual","G.L. Num", "G.L. Denom", "F-exp", "p-value")
+  colnames(Perm$Initial$Global)=c("Explained", "Residual","df Num", "df Denom", "F-exp", "p-value",  "p-value adj.")
   rownames(Perm$Initial$Global)="Total"
 
   Perm$DistMuestralC=FContrastes
   pvalC=(apply(FContrastes > matrix(Perm$Initial$Contrastes[,5], ncol=1) %*% matrix(1, 1, nperm), 1, sum)+1)/ (nperm+1)
-  Perm$Initial$Contrastes=cbind(Perm$Initial$Contrastes, pvalC)
-  colnames(Perm$Initial$Contrastes)=c("Explained", "Residual","G.L. Num", "G.L. Denom", "F-exp", "p-value")
+  pvalCadjust = round(p.adjust(pvalC, PostHoc), 3)
+  Perm$Initial$Contrastes=cbind(Perm$Initial$Contrastes, pvalC, pvalCadjust)
+  colnames(Perm$Initial$Contrastes)=c("Explained", "Residual","df Num", "df Denom", "F-exp", "p-value", "p-value adj.")
 
   if (!is.null(Effects)){
     Perm$DistMuestralEffects=FEffects
     pvalE=(apply(FEffects > matrix(Perm$Initial$Effects[,5], ncol=1) %*% matrix(1, 1, nperm), 1, sum)+1)/ (nperm+1)
-    Perm$Initial$Effects=cbind(Perm$Initial$Effects, pvalE)
-    colnames(Perm$Initial$Effects)=c("Explained", "Residual","G.L. Num", "G.L. Denom", "F-exp", "p-value")
+    pvalEadjust = round(p.adjust(pvalE, PostHoc), 3)
+    Perm$Initial$Effects=cbind(Perm$Initial$Effects, pvalE, pvalEadjust)
+    colnames(Perm$Initial$Effects)=c("Explained", "Residual","df Num", "df Denom", "F-exp", "p-value", "p-value adj.")
   }
 
   Perm$CoordPrinc=CoordPrinc
@@ -121,7 +121,7 @@ PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=
     Perm$ExplainedVariance = Inertia
     Perm$Inertias= cbind(vp, Inertia, cumsum(Inertia))
     rownames(Perm$Inertias)=paste("PCo", 1:dimens)
-    colnames(Perm$Inertias)=c("Own value", "Explained Variance", "Cumulative")
+    colnames(Perm$Inertias)=c("Eigenvalue", "Explained Variance", "Cumulative")
     Y = solut$u %*% diag(sqrt(solut$d))
     d0=apply(Y^2,1, sum)
 
@@ -149,18 +149,16 @@ PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=
       }
       else{
         G <- (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I) %*% (-0.5 * D^2) %*% (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I)
-        soluc <- svd(G)
-        dimefec=sum(soluc$d > tol)
-        YY=soluc$u[,1:dimefec] %*% diag(sqrt(soluc$d[1:dimefec]))
+        soluc <- eigen(G)
+        dimefec=sum(soluc$values > tol)
+        YY=soluc$vectors[,1:dimefec] %*% diag(sqrt(soluc$values[1:dimefec]))
         Means= solve(N) %*% t(X) %*% YY
         Di=DistContinuous(Means, y=YY, coef = 1)$D
         Yi=-0.5 * solve(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
         Yi=t(Yi)
       }
-
       rownames(Yi)=rownames(D)
       Perm$RowCoordinates=Yi
-
     }
 
     Perm=AddClusterToBiplot(Perm, ClusterType="us", Groups=group )
@@ -168,4 +166,8 @@ PERMANOVA <- function(Distance, group, C=NULL, Effects=NULL, nperm = 1000, seed=
   class(Perm)=c("PERMANOVA")
   return(Perm)
 }
+
+
+
+
 

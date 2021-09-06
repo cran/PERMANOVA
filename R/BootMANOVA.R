@@ -13,7 +13,7 @@ BootMANOVA <- function(Y, Group, C=NULL, M=NULL, Effects=NULL, InitialTransform 
     colnames(Y) <- colnames(X, do.NULL = FALSE, prefix = "V")
 
 
-  Bip$Title = "Boottstrap MANOVA Biplot"
+  Bip$Title = "Bootstrap MANOVA Biplot"
   Bip$Type = "MANOVA"
   Bip$Non_Scaled_Data = Y
   Bip$Means = apply(Y, 2, mean)
@@ -30,7 +30,7 @@ BootMANOVA <- function(Y, Group, C=NULL, M=NULL, Effects=NULL, InitialTransform 
   if (is.factor(Group)) {
     GroupNames = levels(Group)
   }
-  L = length(levels(Group)) #Número de grupos
+  L = length(levels(Group)) #Number of groups
   I = dim(Y)[1] #Número de de individuos
   J = dim(Y)[2] #Número de variables
   r = min(c(L - 1, J)) # Rango de la solucion

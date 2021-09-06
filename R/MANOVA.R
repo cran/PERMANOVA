@@ -167,7 +167,7 @@ MANOVA <- function(Y, Group, C=NULL, M=NULL, Effects=NULL, InitialTransform = 5,
     Bip$Contrasts=EstimContrastes
   }
 
-  class(Bip)=c("MANOVA")
+  class(Bip)=c("MANOVA", "MANOVA.Biplot")
   return(Bip)
 }
 

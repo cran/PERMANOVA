@@ -1,5 +1,5 @@
 BootCanonicalBiplot <- function(X, group, SUP = NULL, InitialTransform = 5, B=100, LDA=FALSE) {
-  # B is the number of Bootstrap samples
+# B is the number of Bootstrap samples
   cl <- match.call()
 
   ContinuousDataTransform = c("Raw Data", "Substract the global mean", "Double centering",
@@ -181,9 +181,9 @@ BootCanonicalBiplot <- function(X, group, SUP = NULL, InitialTransform = 5, B=10
   rownames(Bip$QLRVars) = VarNames
   colnames(Bip$QLRVars) = DimNames
 
-  NGroups=length(levels(group))
-  Bip$Clusters = group
-  Bip$ClusterNames = levels(group)
+    NGroups=length(levels(group))
+    Bip$Clusters = group
+    Bip$ClusterNames = levels(group)
 
   palette(rainbow(NGroups))
   ClusterColors = palette()

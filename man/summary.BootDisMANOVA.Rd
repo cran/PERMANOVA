@@ -23,7 +23,7 @@ Any other parameter.
 }
 }
 \details{
-Summarizes the results of a Bootstrap Manova based on distances including latex tables.
+Summarizes the results of a Bootstrap Manova based on distances including Latex tables.
 }
 \value{
 Prints the results.

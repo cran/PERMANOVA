@@ -1,6 +1,6 @@
 PlotClustersBiplot <- function (A, Groups = Ones(c(nrow(A), 1)), TypeClus = "st", ClusterColors = NULL,
-                                ClusterNames = NULL, centers = TRUE, ClustConf = 1, Legend = FALSE,
-                                LegendPos = "topright", CexClustCenters = 1, ...)
+          ClusterNames = NULL, centers = TRUE, ClustConf = 1, Legend = FALSE,
+          LegendPos = "topright", CexClustCenters = 1, ...)
 {
   TypeClusters = c("ch", "el", "st", "oc")
   if (is.numeric(TypeClus))

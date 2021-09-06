@@ -1,12 +1,15 @@
 plot.PERMANOVA <- function(x, A1 = 1, A2 = 2, ScaleGraph = TRUE,  ShowAxis=FALSE, ShowAxes=FALSE, LabelAxes=TRUE, margin=0.1, ShowBox=TRUE,
-                           PlotGroups = TRUE, LabelGroups=TRUE, CexGroup=1.5, PchGroup=16, ColorGroup = NULL, voronoi = TRUE, VoronoiColor="black",
-                           PlotInd = FALSE, LabelInd=TRUE, CexInd = 0.8, PchInd = 3, ColorInd = NULL,  WhatInds=NULL, IndLabels=NULL,
-                           PlotVars = TRUE, LabelVar=TRUE, CexVar = NULL, PchVar = NULL, ColorVar=NULL, WhatVars=NULL, VarLabels=NULL,
-                           mode="a", TypeScale = "Complete", ValuesScale = "Original", SmartLabels=TRUE,
-                           AddLegend =TRUE, LegendPos="topright", PlotCircle = TRUE, ConvexHulls = FALSE, TypeCircle = "M",
-                           MinQualityVars = 0, dpg = 0, dpi=0,  PredPoints=0, PlotContrasts = FALSE, IndLimits=FALSE, ...){
+                                              PlotGroups = TRUE, LabelGroups=TRUE, CexGroup=1.5, PchGroup=16, ColorGroup = NULL, voronoi = TRUE, VoronoiColor="black",
+                                              PlotInd = FALSE, LabelInd=TRUE, CexInd = 0.8, PchInd = 3, ColorInd = NULL,  WhatInds=NULL, IndLabels=NULL,
+                                              PlotVars = TRUE, LabelVar=TRUE, CexVar = NULL, PchVar = NULL, ColorVar=NULL, WhatVars=NULL, VarLabels=NULL,
+                                              mode="a", TypeScale = "Complete", ValuesScale = "Original", SmartLabels=TRUE,
+                                              AddLegend =TRUE, LegendPos="topright", PlotCircle = TRUE, ConvexHulls = FALSE, TypeCircle = "M",
+                                              MinQualityVars = 0, dpg = 0, dpi=0,  PredPoints=0, PlotClus = TRUE, TypeClus = "ch", ClustConf = 1, CexClustCenters=1,
+                                              ClustCenters = FALSE, UseClusterColors = TRUE, ...){
+
 
   if(!(x$CoordPrinc)) stop("You have to calculate the principal components when run PERMANOVA")
+  if (is.null(x$ClusterType))  x=AddClusterToBiplot(x, ClusterType="us", Groups=x$Groups)
 
   modes=c("p", "a", "b", "h", "ah", "s")
   if (is.numeric(mode))
@@ -77,41 +80,34 @@ plot.PERMANOVA <- function(x, A1 = 1, A2 = 2, ScaleGraph = TRUE,  ShowAxis=FALSE
     yaxt = "n"
   }
 
-  if(IndLimits){
-    xmin = min(A[, 1])
-    xmax = max(A[, 1])
-    ymin = min(A[, 2])
-    ymax = max(A[, 2])
-    margin=margin/3
-  }
-  else{
-    xmin = min(M[, 1])
-    xmax = max(M[, 1])
-    ymin = min(M[, 2])
-    ymax = max(M[, 2])
-  }
+  P=M
 
-
+  xmin = min(P[, 1])
+  xmax = max(P[, 1])
+  ymin = min(P[, 2])
+  ymax = max(P[, 2])
   if (xmax <0 ) xmax=xmax*(-1)
-  xrange=xmax - xmin
-  yrange=ymax - ymin
-  xmin=xmin - xrange * margin
-  xmax=xmax + xrange * margin
-  ymin=ymin - yrange * margin
-  ymax=ymax + yrange * margin
 
+  P = rbind(P, c(xmin - (xmax - xmin) * margin, ymin - (ymax - ymin) * margin))
+  P = rbind(P, c(xmax + (xmax - xmin) * margin, ymax + (ymax - ymin) * margin))
   XLabel=paste("Dimension", A1, " (", round(x$ExplainedVariance[A1], digits=2),"%)", sep="" )
   YLabel=paste("Dimension", A2, " (", round(x$ExplainedVariance[A2], digits=2),"%)", sep="" )
-
 
   if (x$Type == "PERMANOVA")
     Main="PERMANOVA : Graphical representation"
   else
     Main=paste("Canonical Distance Analysis (p-value =", round(x$pvalue, digits=5),")")
+  plot(P[, 1], P[, 2], cex = 0, asp = 1, xlab = XLabel, ylab = YLabel, xaxt = xaxt, yaxt = yaxt, main=Main, axes=ShowAxes,  ...)
 
-  plot(M[,1], M[,2], cex = 0, asp = 1, xlab = XLabel, ylab = YLabel, xaxt = xaxt,
-       yaxt = yaxt, main=Main, axes=ShowAxes, xlim=c(xmin,xmax),ylim=c(ymin, ymax), ...)
+  if (PlotClus) {
+    ColorInd=PlotClustersBiplot(A, x$Clusters, TypeClus = TypeClus, ClusterColors = x$ClusterColors, ClusterNames=x$ClusterNames, centers = ClustCenters, ClustConf=ClustConf, CexClustCenters=CexClustCenters, ...)
 
+    if (x$ClusterType=="gm"){
+      ColorInd2=rgb((x$P %*% t(col2rgb(x$ClusterColors)))/255)
+      if (UseClusterColors) ColorInd = ColorInd2
+      PchInd=rep(16,n)
+    }
+  }
 
   if (PlotInd)
     points(A[, 1], A[, 2], cex = CexInd, col = ColorInd, pch = PchInd, ...)
@@ -138,12 +134,6 @@ plot.PERMANOVA <- function(x, A1 = 1, A2 = 2, ScaleGraph = TRUE,  ShowAxis=FALSE
       hpts <- c(hpts, hpts[1])
       lines(XP[hpts, ], col = ColorGroup[i])
     }
-  }
-
-  if ((PlotContrasts) & (!is.null(x$Cini))){
-    CC= x$C %*% x$MeanCoordinates
-    points(CC[, 1], CC[, 2], cex = CexGroup, col = "black", pch = PchGroup, ...)
-    TextSmart(cbind(CC[, 1], CC[, 2]), CexPoints = CexGroup, ColorPoints = "black", ...)
   }
 
 

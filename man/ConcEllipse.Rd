@@ -30,7 +30,7 @@ Calculates non-parametric concentration ellipses for a two-dimensional set of po
 }
 \value{
 \item{data}{Original data}
-\item{confidence }{Percent of points selected for the ellipse}
+\item{confidence}{Percent of points selected for the ellipse}
 \item{ellipse}{points to plot the ellipse}
 \item{center}{center of the ellipse}
 }

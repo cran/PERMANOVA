@@ -28,6 +28,6 @@ Laura Vicente-Gonzalez and Jose Luis Vicente-Villardon
 }
 
 \examples{
-#data(wine)
+data(wine)
 PostHocComp(wine$Group)
 }

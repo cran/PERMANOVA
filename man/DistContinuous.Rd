@@ -53,7 +53,7 @@ The following coefficients are calculated
 10.- Ware_hedges = sum(abs(y[i,]-x[j,]))/sum(apply(rbind(y[i,],x[j,]),2,max))
 }
 
-\value{
+\value{A list with:
 \item{Data}{A matrix with the initial data (x matrix).}
 \item{SupData}{A matrix with the supplementary data (y matrix).}
 \item{D}{The matrix of distances.}
