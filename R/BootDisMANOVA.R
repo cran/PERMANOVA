@@ -1,169 +1,167 @@
-BootDisMANOVA <- function(Distance, groups, C=NULL, Effects=NULL, nB = 1000, seed=NULL, CoordPrinc=FALSE, dimens=2, PCoA="Standard", ProjectInd=TRUE, tol=1e-4, DatosIni=TRUE) {
-  D=Distance$D
-  Coefficient=Distance$Coefficient
+BootDisMANOVA <- function(Distance, groups, C = NULL, Effects = NULL, nB = 1000,
+                          seed = NULL, CoordPrinc = FALSE, dimens = 2,
+                          PCoA = "Standard", ProjectInd = TRUE, tol = 1e-4,
+                          DatosIni = TRUE) {
+  D <- Distance$D
   cl <- match.call()
 
-  PCoAs= c("Standard", "Weighted")
-  if (is.numeric(PCoA)) PcoA=PCoAs(PCoA)
+  PCoAs <- c("Standard", "Weighted")
+  if (is.numeric(PCoA)) PCoA <- PCoAs[PCoA]
+  PCoA <- match.arg(PCoA, PCoAs)
 
   if (!is.factor(groups)) stop("The grouping variable must be a factor")
 
   if (!is.null(seed)) set.seed(seed)
-  Perm = list() #Container for the solution
-  Perm$call=cl
-  # Setting the properties of data
-  if (is.null(rownames(D)))
+  Perm <- list()
+  Perm$call <- cl
+
+  if (is.null(rownames(D))) {
     rownames(D) <- rownames(D, do.NULL = FALSE, prefix = "I")
-  RowNames = rownames(D)
-
-  Perm$Title = "MANOVA BASED ON  based DISTANCES"
-  Perm$Type = "BootMANOVA"
-  Perm$Distances = D
-
-  if (is.factor(groups)) {
-    GroupNames = levels(groups)
   }
 
-  L = length(levels(groups)) #Número de groupss
-  I = dim(D)[1] #Número de de individuos
-  X = FactorToBinary(groups)
-  colnames(X)=levels(groups)
-  rownames(X)=rownames(D)
+  Perm$Title <- "MANOVA BASED ON DISTANCES"
+  Perm$Type <- "BootMANOVA"
+  Perm$Distances <- D
 
-  if (is.null(C)){
-    C=diag(L)
-    rownames(C)=paste("C",GroupNames)
-    colnames(C)=GroupNames
-    Cwasnull=TRUE
+  GroupNames <- levels(groups)
+  L <- length(GroupNames)
+  I <- dim(D)[1]
+  X <- MultBiplotR::Factor2Binary(groups)
+  colnames(X) <- GroupNames
+  rownames(X) <- rownames(D)
+
+  if (is.null(C)) {
+    C <- diag(L)
+    rownames(C) <- paste("C", GroupNames)
+    colnames(C) <- GroupNames
   }
 
-  nc = dim(C)[1]
+  nc <- dim(C)[1]
+  Perm$C <- C
 
-  Perm$C=C
-
-  if (!is.null(Effects)){
-    Perm$Effects=Effects
+  if (!is.null(Effects)) {
+    Perm$Effects <- Effects
   }
 
   # PERMANOVA INICIAL
-  Perm$Initial=PERMANOVA.Estimation(D, X, C, Effects)
+  Perm$Initial <- PERMANOVA.Estimation(D, X, C, Effects)
 
-  if (is.null(seed))
-    set.seed(1)
-  else
-    set.seed(seed)
+  if (is.null(seed)) set.seed(1) else set.seed(seed)
 
-  # Permutaciones
-  Ftotal=matrix(0, 1,  nB)
-  FContrastes= matrix(0, nc, nB)
-  if (!is.null(Effects)){
-    ne=length(levels(Effects))
-    FEffects=matrix(0, ne, nB)
+  # Bootstrap
+  Ftotal <- matrix(0, 1, nB)
+  FContrastes <- matrix(0, nc, nB)
+  if (!is.null(Effects)) {
+    ne <- length(levels(Effects))
+    FEffects <- matrix(0, ne, nB)
   }
 
-  for (i in 1:nB){
-#    if (i%%100==0) print(i)
-    muestra=sample.int(I, size=I, replace=TRUE)
-    Man=PERMANOVA.Estimation(D[muestra, muestra], X, C, Effects)
-    Ftotal[i]=Man$Global[5]
-    FContrastes[,i]=Man$Contrastes[,5]
-    if (!is.null(Effects)){
-      FEffects[,i]=Man$Effects[,5]
+  for (i in 1:nB) {
+    muestra <- sample.int(I, size = I, replace = TRUE)
+    Man <- PERMANOVA.Estimation(D[muestra, muestra], X, C, Effects)
+    Ftotal[i] <- Man$Global[5]
+    FContrastes[, i] <- Man$Contrastes[, 5]
+    if (!is.null(Effects)) {
+      FEffects[, i] <- Man$Effects[, 5]
     }
   }
 
-  Perm$DistMuestral=Ftotal
-  Perm$pvalue=((sum(Ftotal >= Perm$Initial$Global[1,5]) +1 )/ (nB+1))
-  Perm$Initial$Global= cbind(Perm$Initial$Global, Perm$pvalue)
+  Perm$DistMuestral <- Ftotal
+  Perm$pvalue <- (sum(Ftotal >= Perm$Initial$Global[1, 5]) + 1) / (nB + 1)
+  Perm$Initial$Global <- cbind(Perm$Initial$Global, Perm$pvalue)
+  colnames(Perm$Initial$Global) <- c("Explained", "Residual", "G.L. Num", "G.L. Denom", "F-exp", "p-value")
+  rownames(Perm$Initial$Global) <- "Total"
 
-  colnames(Perm$Initial$Global)=c("Explained", "Residual","G.L. Num", "G.L. Denom", "F-exp", "p-value")
-  rownames(Perm$Initial$Global)="Total"
+  Perm$DistMuestralC <- FContrastes
+  pvalC <- (rowSums(FContrastes >= matrix(Perm$Initial$Contrastes[, 5], nrow = nc, ncol = nB)) + 1) / (nB + 1)
+  Perm$Initial$Contrastes <- cbind(Perm$Initial$Contrastes, pvalC)
+  colnames(Perm$Initial$Contrastes) <- c("Explained", "Residual", "G.L. Num", "G.L. Denom", "F-exp", "p-value")
 
-  Perm$DistMuestralC=FContrastes
-  pvalC=(apply(FContrastes > matrix(Perm$Initial$Contrastes[,5], ncol=1) %*% matrix(1, 1, nB), 1, sum)+1)/ (nB+1)
-  Perm$Initial$Contrastes=cbind(Perm$Initial$Contrastes, pvalC)
-  colnames(Perm$Initial$Contrastes)=c("Explained", "Residual","G.L. Num", "G.L. Denom", "F-exp", "p-value")
-
-  if (!is.null(Effects)){
-    Perm$DistMuestralEffects=FEffects
-    pvalE=(apply(FEffects > matrix(Perm$Initial$Effects[,5], ncol=1) %*% matrix(1, 1, nB), 1, sum)+1)/ (nB+1)
-    Perm$Initial$Effects=cbind(Perm$Initial$Effects, pvalE)
-    colnames(Perm$Initial$Effects)=c("Explained", "Residual","G.L. Num", "G.L. Denom", "F-exp", "p-value")
-    print(Perm$Initial$Effects)
+  if (!is.null(Effects)) {
+    Perm$DistMuestralEffects <- FEffects
+    pvalE <- (rowSums(FEffects >= matrix(Perm$Initial$Effects[, 5], nrow = ne, ncol = nB)) + 1) / (nB + 1)
+    Perm$Initial$Effects <- cbind(Perm$Initial$Effects, pvalE)
+    colnames(Perm$Initial$Effects) <- c("Explained", "Residual", "G.L. Num", "G.L. Denom", "F-exp", "p-value")
   }
 
-  Perm$CoordPrinc=CoordPrinc
+  Perm$CoordPrinc <- CoordPrinc
 
-  if (CoordPrinc){
+  if (CoordPrinc) {
+    N <- t(X) %*% X
+    invN <- solve(N)
+    FS <- invN %*% (t(X) %*% (0.5 * D^2) %*% X) %*% invN
+    f <- matrix(diag(FS), L, 1)
 
-    N=t(X) %*% X
-    #D=0.5*D^2
-    FS=solve(N)%*% (t(X) %*% (0.5*D^2) %*% X) %*% solve(N)
-    f=matrix(diag(FS), L, 1)
+    DB <- 2 * FS - f %*% matrix(1, 1, L) - t(f %*% matrix(1, 1, L))
+    DB <- 0.5 * DB
 
-    DB=2*FS - f %*% matrix(1, 1, L) - t(f %*% matrix(1, 1, L))
-    DB=0.5*DB
+    switch(PCoA,
+           Standard = {
+             H <- diag(L) - matrix(1, L, L) / L
+             B <- -H %*% DB %*% H
+           },
+           Weighted = {
+             H <- diag(L) - matrix(1, L, 1) %*% matrix(diag(N), 1, L) / I
+             B <- -H %*% DB %*% H
+           }
+    )
 
-    switch(PCoA, Standard = {
-      H=(diag(L) - matrix(1, L, L)/L)
-      B =  H %*% DB %*% H
-    },Weighted = {
-      H=(diag(L) - matrix(1, L, 1) %*% matrix(diag(N), 1, L)/I)
-      B = H %*% DB  %*% H
-    })
+    solut <- eigen(B, symmetric = TRUE)
+    pos <- which(solut$values > tol)
+    if (length(pos) == 0) pos <- 1
+    vals <- solut$values[pos]
+    vecs <- solut$vectors[, pos, drop = FALSE]
 
-    solut <- svd(B)
-    b=diag(B)
-    vp=solut$d[1:dimens]
-    Inertia=(solut$d[1:dimens]/sum(solut$d)) * 100
-    Perm$ExplainedVariance = Inertia
-    Perm$Inertias= cbind(vp, Inertia, cumsum(Inertia))
-    rownames(Perm$Inertias)=paste("PCo", 1:dimens)
-    colnames(Perm$Inertias)=c("Eigenvalue", "Explained Variance", "Cumulative")
-    Y = solut$u %*% diag(sqrt(solut$d))
-    d0=apply(Y^2,1, sum)
+    dimens_eff <- min(dimens, length(vals))
+    vp <- vals[1:dimens_eff]
+    Inertia <- (vp / sum(vals)) * 100
+    Perm$ExplainedVariance <- Inertia
+    Perm$Inertias <- cbind(vp, Inertia, cumsum(Inertia))
+    rownames(Perm$Inertias) <- paste("PCo", 1:dimens_eff)
+    colnames(Perm$Inertias) <- c("Eigenvalue", "Explained Variance", "Cumulative")
 
-    rownames(Y)=levels(groups)
+    Y <- vecs %*% diag(sqrt(vals), nrow = length(vals))
+    d0 <- rowSums(Y^2)
+    rownames(Y) <- GroupNames
 
-    st <- apply(Y^2, 1, sum)
-    Perm$MeanCoordinates=Y[,1:dimens]
-    colnames(Perm$MeanCoordinates)=paste("Dim",1:dimens)
-    colnames(Perm$MeanCoordinates)=paste("Dim",1:dimens)
-    qlr <- diag(1/st) %*% (Perm$MeanCoordinates^2)
-    Perm$Qualities=round(qlr[, 1:dimens]*100, digits=2)
-    rownames(Perm$Qualities)=levels(groups)
-    colnames(Perm$Qualities)=paste("Dim",1:dim(Perm$Qualities)[2])
+    st <- d0
+    Perm$MeanCoordinates <- Y[, 1:dimens_eff, drop = FALSE]
+    colnames(Perm$MeanCoordinates) <- paste("Dim", 1:dimens_eff)
+    qlr <- diag(1 / st, nrow = L) %*% (Perm$MeanCoordinates^2)
+    Perm$Qualities <- round(qlr * 100, digits = 2)
+    rownames(Perm$Qualities) <- GroupNames
+    colnames(Perm$Qualities) <- paste("Dim", 1:dimens_eff)
+    Perm$CummulativeQualities <- t(apply(Perm$Qualities, 1, cumsum))
 
-    Perm$CummulativeQualities=t(apply(Perm$Qualities,1,cumsum))
+    if (ProjectInd) {
+      Y_sub <- Y[, 1:dimens_eff, drop = FALSE]
+      cont_coefs <- c("euclidean", "manhattan", "minkowski", "canberra", "bray", "kulczynski", "gower")
+      can_use_raw <- DatosIni && !is.null(Distance$Data) &&
+        (is.matrix(Distance$Data) || all(sapply(Distance$Data, is.numeric))) &&
+        (!is.null(Distance$Coefficient) && tolower(Distance$Coefficient) %in% cont_coefs)
 
-    if (ProjectInd){
-      Y = Y[,1:dimens]
-      if (DatosIni){
-        YY=as.matrix(Distance$Data)
-        Means= solve(N) %*% t(X) %*% YY
-        Di=DistContinuous(Means, y=YY, coef = Distance$Coefficient)$D^2
-        Yi=-0.5 * Ginv(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
-        Yi=t(Yi)
+      if (can_use_raw) {
+        YY <- as.matrix(Distance$Data)
+        Means <- invN %*% t(X) %*% YY
+        Di <- DistContinuous(Means, y = YY, coef = tolower(Distance$Coefficient))$D^2
+      } else {
+        # Proyección exacta de Gower desde la matriz de distancias D^2
+        d_il_mean <- (D^2) %*% X %*% invN
+        d_ll_mean <- diag(invN %*% (t(X) %*% (D^2) %*% X) %*% invN)
+        Di <- sweep(d_il_mean, 2, 0.5 * d_ll_mean, "-")
       }
-      else{
-        G <- (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I) %*% (-0.5 * D^2) %*% (diag(I) - matrix(1, I, 1) %*% matrix(1, 1, I) / I)
-        soluc <- svd(G)
-        dimefec=sum(soluc$d > tol)
-        YY=soluc$u[,1:dimefec] %*% diag(sqrt(soluc$d[1:dimefec]))
-        Means= solve(N) %*% t(X) %*% YY
-        Di=DistContinuous(Means, y=YY, coef = 1)$D
-        Yi=-0.5 * solve(t(Y)%*%Y) %*% t(Y) %*% H %*% t(Di-matrix(1,I,1) %*% matrix(d0,1,L))
-        Yi=t(Yi)
-      }
 
-      rownames(Yi)=rownames(D)
-      Perm$RowCoordinates=Yi
-
+      Yi <- -0.5 * MultBiplotR::ginv(t(Y_sub) %*% Y_sub) %*% t(Y_sub) %*% H %*%
+        t(Di - matrix(1, I, 1) %*% matrix(d0, 1, L))
+      Yi <- t(Yi)
+      rownames(Yi) <- rownames(D)
+      Perm$RowCoordinates <- Yi
     }
 
-    Perm=AddClusterToBiplot(Perm, ClusterType="us", Groups=groups )
+    Perm <- MultBiplotR::AddCluster2Biplot(Perm, ClusterType = "us", Groups = groups)
   }
-  class(Perm)=c("BootDisMANOVA")
+
+  class(Perm) <- c("BootDisMANOVA")
   return(Perm)
 }
 

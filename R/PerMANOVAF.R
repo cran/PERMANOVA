@@ -1,7 +1,7 @@
 PerMANOVAF <- function(D, grupo, C, Efectos){
   g = length(levels(grupo))
   n = dim(D)[1]
-  G = FactorToBinary(grupo) # Matrix of indicators
+  G = MultBiplotR::Factor2Binary(grupo) # Matrix of indicators
   Eij = G %*% t(G)
   TSS=0.5*sum(D^2)/n
   ng=diag(t(G) %*% G)

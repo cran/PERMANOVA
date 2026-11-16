@@ -1,105 +1,55 @@
 \name{DistBinary}
 \alias{DistBinary}
-
 \title{
 Distances for binary data
 }
 \description{
-Calculates distancies among individuals for binary data. It is possible introduce two matrices (x, y) and calculate the distancies between them or introduce only one matrix (x) and calculate the distancies among individuals in the single matrix.
+Calculates distances among individuals for binary data. It is possible to introduce two matrices (\code{x}, \code{y}) and calculate the distances between them, or introduce only one matrix (\code{x}) and calculate the distances among individuals in the single matrix.
 }
 \usage{
-DistBinary(x, y = NULL, coefficient = "Simple_Matching", transformation = "sqrt(1-S)")
+DistBinary(x, y = NULL, coefficient = "Simple_Matching",
+  transformation = "sqrt(1-S)", euclidean = FALSE)
 }
-
 \arguments{
   \item{x}{
-A matrix containing binary data.
+A matrix containing binary data (0/1).
 }
   \item{y}{
-A matrix containing binary data different than x. By default it is null because if we want calculate the distancies between individuals it's not necessary.
+A matrix containing binary data different from \code{x}. By default it is \code{NULL}.
 }
   \item{coefficient}{
-Similarity coefficients for binary data.By default it is Simple_Matching. See details.
+Similarity coefficients for binary data. By default it is \code{"Simple_Matching"}. See details.
 }
   \item{transformation}{
-Transformations of similarities into distances. By default it is sqrt(1-S). See details.
+Transformations of similarities into distances. By default it is \code{"sqrt(1-S)"}. See details.
+}
+  \item{euclidean}{
+Logical; if \code{TRUE}, applies Lingoes Euclidean correction via \code{\link[dbrobust]{make_euclidean}}. By default it is \code{FALSE}.
 }
 }
 \details{
-The function calculates coefficients of similarity (among individuals) for binary data and converts them into measures of distance.
+The function calculates coefficients of similarity among individuals for binary data and converts them into measures of distance.
 
-We have 17 different coefficients (numbers instead of names can be used as arguments of the function) :
+Available coefficients (numbers instead of names can also be used):
+1. \code{Kulezynski}, 2. \code{Russell_and_Rao}, 3. \code{Jaccard}, 4. \code{Simple_Matching}, 5. \code{Anderberg}, 6. \code{Rogers_and_Tanimoto}, 7. \code{Sorensen_Dice_and_Czekanowski}, 8. \code{Sneath_and_Sokal}, 9. \code{Hamman}, 10. \code{Kulezynski2}, 11. \code{Anderberg2}, 12. \code{Ochiai}, 13. \code{S13}, 14. \code{Pearson_phi}, 15. \code{Yule}, 16. \code{Sorensen}, 17. \code{Dice}.
 
-
-   * 1.- Kulezynski
-
-   * 2.- Russell_and_Rao
-
-   * 3.- Jaccard
-
-   * 4.- Simple_Matching
-
-   * 5.- Anderberg
-
-   * 6.- Rogers_and_Tanimoto
-
-   * 7.- Sorensen_Dice_and_Czekanowski
-
-   * 8.- Sneath_and_Sokal
-
-   * 9.- Hamman
-
-   * 10.- Kulezynski2
-
-   * 11.- Anderberg2
-
-   * 12.- Ochiai
-
-   * 13.- S13
-
-   * 14.- Pearson_phi
-
-   * 15.- Yule
-
-   * 16.- Sorensen
-
-   * 17.- Dice
-
-   There are nine possible transformations of the initial similarities:
-
-  * 1.- Identity
-
-  * 2.- 1-S
-
-  * 3.- sqrt(1-S)
-
-  * 4.- (-log(S))
-
-  * 5.- (1/S-1)
-
-  * 6.- (sqrt(2(1-S)))
-
-  * 7.- (1-(S+1)/2)
-
-  * 8.- 1-abs(S)
-
-  * 9.- 1/(S+1)
+Nine transformations of similarities into distances are available:
+1. \code{Identity}, 2. \code{1-S}, 3. \code{sqrt(1-S)}, 4. \code{-log(s)}, 5. \code{1/S-1}, 6. \code{sqrt(2(1-S))}, 7. \code{1-(S+1)/2}, 8. \code{1-abs(S)}, 9. \code{1/(S+1)}.
 }
 \value{
-The DistBinary function creates a list that return:
+A list of class \code{"proximities"} with:
 \item{Data}{A matrix with initial data.}
-\item{D}{A matrix containing binary distancies.}
+\item{D}{A matrix containing binary distances.}
 \item{Coefficient}{Character containing the name of the coefficient used.}
+\item{Type}{Character string indicating \code{"binary"}.}
 }
-
 \references{
-Gower, J. C. (2006) Similarity dissimilarity and Distance, measures of. Encyclopedia of Statistical Sciences. 2nd. ed. Volume 12. Wiley
+Gower, J. C. (2006). Similarity, dissimilarity and Distance, measures of. \emph{Encyclopedia of Statistical Sciences}, 2nd ed., Volume 12. Wiley.
 }
 \author{
 Laura Vicente-Gonzalez, Jose Luis Vicente-Villardon
 }
-
 \examples{
 data(spidersb)
-DD=DistBinary(spidersb)
+DD <- DistBinary(spidersb)
 }

@@ -1,31 +1,29 @@
-export(MANOVA,PerMANOVA.Simple, PostHocComp, DistBinary,
-              MANOVA.Estimation, PERMANOVA, DistContinuous, PERMANOVA.Estimation,
-              BootDisMANOVA,summary.BootDisMANOVA, ConcEllipse,
-              BootDistCanonicalAnalysis, plot.BootCanonAnalysis,
-              plot.MANOVA, plot.PERMANOVA, ConstructContrasts, plot.ellipse,
-              AddClusterToBiplot, BiplotVar, FactorToBinary, PlotClustersBiplot,
-              ProcrustesSimple, TextSmart, BinaryVectorCheck, GetScalesBiplot,
-              IniTransform, Ginv, Circle2, Ones, Zeros, Cumsum, inbox, mgc)
+export(MANOVA, PerMANOVA.Simple, PostHocComp, DistBinary,
+       DistContinuous, DistCategorical, DistMixed, Distances,
+       MANOVA.Estimation, PERMANOVA, PERMANOVA.Estimation,
+       BootDisMANOVA, summary.BootDisMANOVA,
+       BootDistCanonicalAnalysis, plot.BootCanonAnalysis,
+       plot.MANOVA, plot.PERMANOVA, ConstructContrasts,
+       ProcrustesSimple, IniTransform)
 
 S3method(summary, spermanova)
 S3method(summary, PERMANOVA)
 S3method(print, PERMANOVA)
 S3method(plot, PERMANOVA)
 S3method(plot, MANOVA)
-S3method(plot, ellipse)
 S3method(summary, MANOVA)
 S3method(summary, BootDisMANOVA)
 S3method(print, BootDisMANOVA)
 S3method(plot, BootDisMANOVA)
 S3method(plot, BootCanonAnalysis)
 
-import ("MASS", "Matrix", "xtable", "scales", "deldir")
+import("Matrix", "xtable", "scales", "deldir", "MultBiplotR")
+importFrom("MASS", "lda")
+importFrom("dbrobust", "calculate_distances", "robust_distances", "make_euclidean", "merge_distances")
 
-importFrom("grDevices", "chull", "col2rgb", "palette", "rainbow",
-               "rgb")
-importFrom("graphics", "arrows", "legend", "lines", "points", "rect",
-               "segments", "text")
+importFrom("grDevices", "chull", "col2rgb", "colors", "palette", "rainbow", "rgb")
+importFrom("graphics", "arrows", "box", "legend", "lines", "points", "rect", "segments", "text")
 importFrom("stats", "as.dendrogram", "as.dist", "contr.helmert", "cor",
-               "cutree", "dendrapply", "df", "dist", "hclust", "is.leaf",
-               "kmeans", "median", "pf", "predict", "qchisq", "qf", "qt",
-               "quantile", "sd", "runif", "p.adjust")
+           "cutree", "dendrapply", "df", "dist", "hclust", "is.leaf",
+           "kmeans", "median", "pf", "predict", "qchisq", "qf", "qt",
+           "quantile", "sd", "runif", "p.adjust")
